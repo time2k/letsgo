@@ -1,7 +1,6 @@
 package Libs
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/gomodule/redigo/redis"
@@ -54,12 +53,12 @@ func (c *LCache) Get(cache_key string, DataStruct interface{}) (bool, error) {
 		defer conn.Close()
 
 		/*isexist, err := redis.Int(conn.Do("EXISTS", cache_key))
-		  if err != nil {
-		      return false, fmt.Errorf("[error]LCache Redisc exists cmd: %s", err.Error())
-		  }
-		  if isexist == 0 {
-		      return false, nil
-		  }*/
+		if err != nil {
+			return false, fmt.Errorf("[error]LCache Redisc exists cmd: %s", err.Error())
+		}
+		if isexist == 0 {
+			return false, nil
+		}*/
 		s, err := redis.String(conn.Do("GET", cache_key))
 		if err != nil {
 			if err == redis.ErrNil {
@@ -209,18 +208,30 @@ func (c *LCache) LPUSH(cache_key string, DataStruct interface{}) (int, error) {
 	return 0, nil
 }
 
-//Do general Do func mapping
-func (c *LCache) Do(commandName string, args ...interface{}) (reply interface{}, err error) {
+//DO only for redis
+func (c *LCache) DO(CMD string, Params ...interface{}) (interface{}, error) {
 	switch c.UseRediscOrMemcached {
 	case 1:
-		return nil, errors.New("Memcached doesn't support Do func")
+		return nil, fmt.Errorf("Memcached Don't support DO")
 	case 2:
 		conn := c.Redisc.GetConn(true)
 		defer conn.Close()
 
-		return conn.Do(commandName, args...)
+		return conn.Do(CMD, Params...)
 	}
-	return nil, errors.New("error happend")
+	return nil, nil
+}
+
+//GetRedisConn 得到一个redis连接
+func (c *LCache) GetRedisConn() (redis.Conn, error) {
+	switch c.UseRediscOrMemcached {
+	case 1:
+		return nil, fmt.Errorf("Memcached Don't support GetRedisConn")
+	case 2:
+		return c.Redisc.GetConn(true), nil
+		//defer conn.Close()
+	}
+	return nil, nil
 }
 
 //Show 显示设置
