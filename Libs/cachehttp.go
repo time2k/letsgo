@@ -2,6 +2,7 @@ package Libs
 
 import (
 	"Letsgo2/Lconfig"
+	"bytes"
 	"compress/gzip"
 	"crypto/md5"
 	"encoding/hex"
@@ -10,6 +11,7 @@ import (
 	"io/ioutil"
 	"log"
 	"math/rand"
+	"mime/multipart"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -122,14 +124,64 @@ func (c *LCacheHTTP) SampleHTTPClient(rq *HTTPRequest, debug *DebugModel, ret ch
 	httpRes.URL = rq.URL
 
 	if rq.Postdata != nil {
-		if _, ok := rq.Header["Content-Type"]; !ok {
+		if _, ok := rq.Header["Content-Type"]; !ok { //默认类型为application/x-www-form-urlencoded
 			data := make(url.Values)
 			for k, v := range rq.Postdata {
-				data.Add(k, v)
+				data.Add(k, v.(string))
 			}
 			pbody = strings.NewReader(data.Encode())
-		} else {
-			pbody = strings.NewReader(rq.Postdata["0"])
+		} else if rq.Header["Content-Type"] == "application/x-www-form-urlencoded" {
+			data := make(url.Values)
+			for k, v := range rq.Postdata {
+				data.Add(k, v.(string))
+			}
+			pbody = strings.NewReader(data.Encode())
+		} else if rq.Header["Content-Type"] == "multipart/form-data" {
+			var b bytes.Buffer
+			w := multipart.NewWriter(&b)
+			for k, v := range rq.Postdata {
+				if strings.Contains(k, "file:") { //如果key中包含file:，则认为是文件型
+					strsplit := strings.Split(k, ":")
+					filename := strsplit[1]
+					fw, err := w.CreateFormFile(filename, "file")
+					if err != nil {
+						debug.Add(fmt.Sprintf("CacheHTTP multipart create error: %s", err.Error()))
+						log.Println("[error]CacheHTTP multipart create error:", err.Error())
+						return err
+					}
+					file := v.(*multipart.FileHeader)
+					fs, err := file.Open()
+					defer fs.Close()
+					if err != nil {
+						debug.Add(fmt.Sprintf("CacheHTTP multipart open error: %s", err.Error()))
+						log.Println("[error]CacheHTTP multipart open error:", err.Error())
+						return err
+					}
+					if _, err := io.Copy(fw, fs); err != nil {
+						debug.Add(fmt.Sprintf("CacheHTTP multipart io.Copy error: %s", err.Error()))
+						log.Println("[error]CacheHTTP multipart io.Copy error:", err.Error())
+						return err
+					}
+				} else {
+					fw, err := w.CreateFormField(k)
+					if err != nil {
+						debug.Add(fmt.Sprintf("CacheHTTP multipart create error: %s", err.Error()))
+						log.Println("[error]CacheHTTP multipart create error:", err.Error())
+						return err
+					}
+					if _, err = fw.Write([]byte(v.(string))); err != nil {
+						debug.Add(fmt.Sprintf("CacheHTTP multipart write error: %s", err.Error()))
+						log.Println("[error]CacheHTTP multipart write error:", err.Error())
+						return err
+					}
+				}
+			}
+			w.Close()
+			pbody = &b
+			//set header
+			rq.Header["Content-Type"] = w.FormDataContentType()
+		} else { //json body, binary body etc
+			pbody = strings.NewReader(rq.Postdata["0"].(string))
 		}
 	}
 
@@ -141,6 +193,7 @@ func (c *LCacheHTTP) SampleHTTPClient(rq *HTTPRequest, debug *DebugModel, ret ch
 	req.Header.Add("User-Agent", "Mozilla/5.0")
 	req.Header.Add("Accept-Encoding", "deflate")
 
+	//增加默认类型头 application/x-www-form-urlencoded
 	if (rq.Method == "POST" || rq.Method == "post") && rq.Postdata != nil {
 		if _, ok := rq.Header["Content-Type"]; !ok {
 			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")

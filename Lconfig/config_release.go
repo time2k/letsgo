@@ -43,12 +43,12 @@ var (
 	//cachehttp相关设置
 	CACHEHTTP_DIAL_TIMEOUT                 = time.Second * 2 //http dial 超时，包含DNS时间
 	CACHEHTTP_RESPONSE_TIMEOUT             = time.Second * 2 //http响应超时
-	CACHEHTTP_CHANNEL_BUFFER_LEN           = 100
+	CACHEHTTP_CHANNEL_BUFFER_LEN           = 10
 	CACHEHTTP_DOWNGRADE_CACHE_EXPIRE int32 = 60
 	CACHEHTTP_SELECT_TIMEOUT               = time.Second * 10
 
 	//schedule相关设置
-	SCHEDULE_CHANNEL_BUFFER_LEN = 100 //调度器channel buffer长度
+	SCHEDULE_CHANNEL_BUFFER_LEN = 20 //调度器channel buffer长度
 	SCHEDULE_MAX_CONCURRENT     = 20
 	SCHEDULE_SELECT_TIMEOUT     = time.Second * 10
 

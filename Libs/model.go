@@ -8,7 +8,8 @@ import (
 	"Letsgo2/Lconfig"
 	"crypto/md5"
 	"encoding/hex"
-	"net/url"
+	"strconv"
+	"time"
 )
 
 //HTTPRequest http请求结构体
@@ -19,7 +20,7 @@ type HTTPRequest struct {
 	Method    string
 	URL       string
 	Header    map[string]string
-	Postdata  map[string]string
+	Postdata  map[string]interface{}
 }
 
 //HTTPResponseResult http响应结构体
@@ -154,12 +155,12 @@ func (c *Lmodel) SetDataStruct(data interface{}) {
 }
 
 //GetHTTPUniqid 生成HTTP请求的唯一标识
-func (c *Lmodel) GetHTTPUniqid(rtype string, method string, urls string, header map[string]string, postdata map[string]string) string {
+func (c *Lmodel) GetHTTPUniqid(rtype string, method string, urls string, header map[string]string, postdata map[string]interface{}) string {
 	var uniq_base string
 	uniq_base += rtype + "|"
 	uniq_base += method + "|"
 	uniq_base += urls + "|"
-	if header != nil {
+	/*if header != nil {
 		data := make(url.Values)
 		for k, v := range header {
 			data[k] = []string{v}
@@ -172,14 +173,15 @@ func (c *Lmodel) GetHTTPUniqid(rtype string, method string, urls string, header 
 			data[k] = []string{v}
 		}
 		uniq_base += data.Encode() + "|"
-	}
+	}*/
+	uniq_base += strconv.FormatInt(time.Now().UnixNano(), 10)
 	md5Ctx := md5.New()
 	md5Ctx.Write([]byte(uniq_base))
 	return hex.EncodeToString(md5Ctx.Sum(nil))
 }
 
 //SetHTTP 设置HTTP请求
-func (c *Lmodel) SetHTTP(needcache bool, rtype string, method string, url string, header map[string]string, postdata map[string]string) string {
+func (c *Lmodel) SetHTTP(needcache bool, rtype string, method string, url string, header map[string]string, postdata map[string]interface{}) string {
 	newRequest := new(HTTPRequest)
 	newRequest.UniqID = c.GetHTTPUniqid(rtype, method, url, header, postdata)
 	newRequest.NeedCache = needcache

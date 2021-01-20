@@ -30,6 +30,7 @@ type Letsgo struct {
 	Logger     *log.Logger
 	LoggerFile *os.File
 	ModelPool  sync.Pool
+	BadWord    *LBadWords
 	CacheLock  *LCacheLock
 }
 

@@ -15,14 +15,15 @@ require (
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gomodule/redigo v2.0.0+incompatible
+	github.com/importcjj/sensitive v0.0.0-20190611120559-289e87ec4108
 	github.com/json-iterator/go v1.1.6
 	github.com/labstack/echo v3.3.10+incompatible // indirect
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/mna/redisc v1.1.5
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
-	github.com/robfig/cron v1.2.0 // indirect
-	github.com/smartystreets/goconvey v0.0.0-20190710185942-9d28bd7c0945 // indirect
+	github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a // indirect
 	github.com/spf13/viper v1.4.0
+	github.com/syyongx/php2go v0.9.4 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 )
