@@ -1,8 +1,8 @@
 package Libs
 
 import (
-	"Letsgo2/Ltypedef"
 	"database/sql"
+	"letsgo/Ltypedef"
 	"log"
 	"os"
 	"sync"

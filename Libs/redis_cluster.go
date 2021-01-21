@@ -1,8 +1,8 @@
 package Libs
 
 import (
-	"Letsgo2/Lconfig"
 	"fmt"
+	"letsgo/Lconfig"
 	"time"
 
 	"github.com/gomodule/redigo/redis" //redigo

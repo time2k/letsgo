@@ -1,9 +1,9 @@
 package Libs
 
 import (
-	"Letsgo2/Lconfig"
-	"Letsgo2/Ltypedef"
 	"fmt"
+	"letsgo/Lconfig"
+	"letsgo/Ltypedef"
 	"os"
 	"path/filepath"
 	"strings"

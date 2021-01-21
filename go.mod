@@ -1,11 +1,8 @@
-module Letsgo2
+module letsgo
 
 go 1.12
 
-replace Letsgo2 => ./
-
 require (
-	Letsgo2 v0.0.0
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
 	github.com/bitly/go-simplejson v0.5.0
 	github.com/bradfitz/gomemcache v0.0.0-20190329173943-551aad21a668

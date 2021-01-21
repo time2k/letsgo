@@ -1,7 +1,6 @@
 package Libs
 
 import (
-	"Letsgo2/Lconfig"
 	"bytes"
 	"compress/gzip"
 	"crypto/md5"
@@ -9,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"letsgo/Lconfig"
 	"log"
 	"math/rand"
 	"mime/multipart"
