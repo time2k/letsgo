@@ -35,6 +35,7 @@ const (
 	StatusNoData        int = 2 //无数据
 	StatusParamsNoValid int = 3 //参数错误
 	StatusError         int = 4 //异常
+	StatusOk2           int = 0 //客户端以code为0时，按接口正常处理的。
 )
 
 var (

@@ -98,9 +98,16 @@ func (c *LCache) Set(cache_key string, DataStruct interface{}, cache_expire int3
 			return fmt.Errorf("[error]LCache Redisc marshall struct: %s", err.Error())
 		}
 
-		_, err2 := conn.Do("SET", cache_key, str, "EX", cache_expire)
-		if err2 != nil {
-			return fmt.Errorf("[error]LCache Redisc set cache: %s", err2.Error())
+		if cache_expire <= 0 {
+			_, err := conn.Do("SET", cache_key, str)
+			if err != nil {
+				return fmt.Errorf("[error]LCache Redisc set cache: %s", err.Error())
+			}
+		} else {
+			_, err := conn.Do("SET", cache_key, str, "EX", cache_expire)
+			if err != nil {
+				return fmt.Errorf("[error]LCache Redisc set cache: %s", err.Error())
+			}
 		}
 	}
 	return nil
